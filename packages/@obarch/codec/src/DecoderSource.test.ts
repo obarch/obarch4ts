@@ -1,11 +1,11 @@
 import {DecoderSource} from './DecoderSource';
 import Markdown from 'markdown-it'
 import * as fs from 'fs';
-import {loadTestData} from './livedoc'
+import {myTestData} from '@obarch/livedoc'
 
 describe('decodeNull', () => {
     test('hello', function () {
-        let testData = loadTestData()
+        let testData = myTestData()
         for (let row of testData.tables[0]) {
             console.log(row)
         }

@@ -2,7 +2,7 @@
   "name": "@obarch/livedoc",
   "version": "1.0.0",
   "description": "write jest test in markdown",
-  "main": "index.js",
+  "main": "dist/livedoc.js",
   "scripts": {
     "test": "jest"
   },
