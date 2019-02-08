@@ -5,7 +5,10 @@ import {loadTestData} from './livedoc'
 
 describe('decodeNull', () => {
     test('hello', function () {
-        loadTestData()
+        let testData = loadTestData()
+        for (let row of testData.tables[0]) {
+            console.log(row)
+        }
         expect(new DecoderSource('null').decodeNull()).toBeTruthy()
         expect(new DecoderSource('nul').decodeNull()).toBeFalsy()
         expect(new DecoderSource('none').decodeNull()).toBeFalsy()
