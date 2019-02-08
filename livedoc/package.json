@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/obarch/obarch4ts/issues"
   },
-  "homepage": "https://github.com/obarch/obarch4ts#readme"
+  "homepage": "https://github.com/obarch/obarch4ts#readme",
+  "devDependencies": {
+    "typescript": "^3.3.3"
+  }
 }
