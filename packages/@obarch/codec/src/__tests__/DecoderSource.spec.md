@@ -3,8 +3,8 @@
 decode null 告诉当前位置是否是一个null。如果是则往前进，否则停留在原来的地方。
 
 ```typescript
-expect(new DecoderSource(stripQuote(source))).decodeNull())
-    .toEqual('true' === value)
+expect(new DecoderSource($row.source).decodeNull())
+    .toEqual('true' === $row.value)
 ```
 
 | source | value |
