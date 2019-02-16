@@ -22,9 +22,9 @@ class Table {
     head: string[] = []
     body: string[][] = [];
 
-    *[Symbol.iterator]() {
+    * [Symbol.iterator]() {
         for (let row of this.body) {
-            let namedRow: Record<string,string> = {}
+            let namedRow: Record<string, string> = {}
             for (let i = 0; i < this.head.length; i++) {
                 namedRow[this.head[i]] = row[i]
             }
@@ -48,6 +48,14 @@ class TestData {
 
     get tables(): Table[] {
         return this._tables
+    }
+
+    get table(): Table {
+        const tables = this.tables
+        if (tables.length === 0) {
+            throw 'no table in the test data'
+        }
+        return tables[0]
     }
 
     private parse() {
@@ -180,4 +188,14 @@ export function myTestData(): TestData {
     let content = fs.readFileSync(mdFilePath, 'utf8')
     let tokens = md.parse(content, {})
     return new TestData(tokens, testInfo.testName)
+}
+
+export function stripQuote(str: string): string {
+    if (str[0] === '"') {
+        return str.substr(1, str.length - 1)
+    }
+    if (str[0] === '`') {
+        return str.substr(1, str.length - 1)
+    }
+    return str
 }

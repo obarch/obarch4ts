@@ -2,7 +2,7 @@
   "name": "@obarch/codec",
   "version": "1.0.0",
   "devDependencies": {
-    "@obarch/livedoc": "^1.0.0",
+    "@obarch/livedoc": "^1.0.1",
     "@types/jest": "^24.0.0",
     "@types/node": "^10.12.21",
     "@types/markdown-it": "^0.0.7",
