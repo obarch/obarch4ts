@@ -39,6 +39,7 @@ class TestData {
     private currentHeadings: string[] = []
     private testName: string
     private _tables: Table[] = []
+    private _lists: string[][] = []
 
     constructor(tokens: Token[], testName: string) {
         this.tokens = tokens
@@ -51,17 +52,26 @@ class TestData {
     }
 
     get table(): Table {
-        const tables = this.tables
-        if (tables.length === 0) {
+        if (this._tables.length === 0) {
             throw 'no table in the test data'
         }
-        return tables[0]
+        return this._tables[0]
+    }
+
+    get lists(): string[][] {
+        return this._lists
+    }
+
+    get list(): string[] {
+        if (this._lists.length === 0) {
+            throw 'no list in the test data'
+        }
+        return this._lists[0]
     }
 
     private parse() {
         for (; this.offset < this.tokens.length;) {
-            let token = this.tokens[this.offset]
-            this.offset++
+            let token = this.tokens[this.offset++]
             if (token.type === 'heading_open') {
                 this.parseHeading(token)
                 continue
@@ -70,8 +80,11 @@ class TestData {
                 continue
             }
             if (token.type === 'table_open') {
-                let table = this.parseTable()
+                const table = this.parseTable()
                 this._tables.push(table)
+            } else if (token.type === 'bullet_list_open') {
+                const list = this.parseList()
+                this._lists.push(list)
             }
         }
     }
@@ -80,11 +93,24 @@ class TestData {
         return this.testName === this.currentHeadings.join(' ')
     }
 
-    private parseTable() {
+    private parseList(): string[] {
+        let list: string[] = []
+        for(; this.offset < this.tokens.length;) {
+            let token = this.tokens[this.offset++]
+            if (token.type == 'bullet_list_close') {
+                return list
+            }
+            if (token.type === 'list_item_open') {
+                list.push(this.parseTextUntil(t => t.type === 'list_item_close'))
+            }
+        }
+        return list
+    }
+
+    private parseTable(): Table {
         let table: Table = new Table()
         for (; this.offset < this.tokens.length;) {
-            let token = this.tokens[this.offset]
-            this.offset++
+            let token = this.tokens[this.offset++]
             if (token.type == 'table_close') {
                 return table
             }
@@ -175,7 +201,7 @@ class TestData {
             let token = this.tokens[this.offset]
             content += token.content
         }
-        return content
+        return stripQuote(content)
     }
 }
 
@@ -190,12 +216,9 @@ export function myTestData(): TestData {
     return new TestData(tokens, testInfo.testName)
 }
 
-export function stripQuote(str: string): string {
-    if (str[0] === '"') {
-        return str.substr(1, str.length - 1)
-    }
+function stripQuote(str: string): string {
     if (str[0] === '`') {
-        return str.substr(1, str.length - 1)
+        return str.substr(1, str.length - 2)
     }
     return str
 }
