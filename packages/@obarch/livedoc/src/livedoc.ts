@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import Token from 'markdown-it/lib/token'
 
 class TestInfo {
-    testNames: string[] = [];
+    testName: string = ''
     testPath: string = ''
 }
 
@@ -11,7 +11,7 @@ expect.extend({
     // @ts-ignore
     async inspectCurrentTest(testInfo: TestInfo) {
         // @ts-ignore
-        testInfo.testNames = this.currentTestName.split(' ')
+        testInfo.testName = this.currentTestName
         // @ts-ignore
         testInfo.testPath = this.testPath
         return {pass: true};
@@ -37,12 +37,12 @@ class TestData {
     private tokens: Token[]
     private offset: number = 0
     private currentHeadings: string[] = []
-    private testNames: string[]
+    private testName: string
     private _tables: Table[] = []
 
-    constructor(tokens: Token[], testNames: string[]) {
+    constructor(tokens: Token[], testName: string) {
         this.tokens = tokens
-        this.testNames = testNames
+        this.testName = testName
         this.parse()
     }
 
@@ -69,15 +69,7 @@ class TestData {
     }
 
     private isMySection(): boolean {
-        if (this.testNames.length !== this.currentHeadings.length) {
-            return false
-        }
-        for (let i = 0; i < this.testNames.length; i++) {
-            if (this.testNames[i] !== this.currentHeadings[i]) {
-                return false
-            }
-        }
-        return true
+        return this.testName === this.currentHeadings.join(' ')
     }
 
     private parseTable() {
@@ -187,5 +179,5 @@ export function myTestData(): TestData {
     let md = new Markdown()
     let content = fs.readFileSync(mdFilePath, 'utf8')
     let tokens = md.parse(content, {})
-    return new TestData(tokens, testInfo.testNames)
+    return new TestData(tokens, testInfo.testName)
 }
