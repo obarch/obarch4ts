@@ -33,6 +33,11 @@ class Table {
     }
 }
 
+type Code =  {
+    info: string
+    content: string
+}
+
 class TestData {
     private tokens: Token[]
     private offset: number = 0
@@ -40,6 +45,7 @@ class TestData {
     private testName: string
     private _tables: Table[] = []
     private _lists: string[][] = []
+    private _codes: Code[] = []
 
     constructor(tokens: Token[], testName: string) {
         this.tokens = tokens
@@ -69,6 +75,17 @@ class TestData {
         return this._lists[0]
     }
 
+    get codes(): Code[] {
+        return this._codes
+    }
+
+    get code(): Code {
+        if (this._codes.length === 0) {
+            throw 'no code in the test data'
+        }
+        return this._codes[0]
+    }
+
     private parse() {
         for (; this.offset < this.tokens.length;) {
             let token = this.tokens[this.offset++]
@@ -85,6 +102,8 @@ class TestData {
             } else if (token.type === 'bullet_list_open') {
                 const list = this.parseList()
                 this._lists.push(list)
+            } else if (token.type === 'fence') {
+                this._codes.push({info: token.info, content: stripTrailingNL(token.content)})
             }
         }
     }
@@ -219,6 +238,13 @@ export function myTestData(): TestData {
 function stripQuote(str: string): string {
     if (str[0] === '`') {
         return str.substr(1, str.length - 2)
+    }
+    return str
+}
+
+function stripTrailingNL(str: string): string {
+    if (str[str.length - 1] === '\n') {
+        return str.substr(0, str.length - 1)
     }
     return str
 }

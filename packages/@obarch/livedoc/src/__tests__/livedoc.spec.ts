@@ -20,6 +20,12 @@ describe('two level table', () => {
 
 test('list', () => {
     const testData = myTestData()
-    const list = testData.lists[0]
-    expect(list).toEqual(['a', 'b'])
+    expect(testData.list).toEqual(['a', 'b'])
+})
+
+describe('code', () => {
+    test('just one', () => {
+        const testData = myTestData()
+        expect(testData.code.content).toEqual('1+1')
+    })
 })
