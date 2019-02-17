@@ -2,8 +2,10 @@ const DecoderSource = require('../DecoderSource').default
 const InvalidUTF8Error = require('../DecoderSource').InvalidUTF8Error
 const EncoderSink = require('../EncoderSink').default
 const livedoc = require('@obarch/livedoc')
-//@ts-ignore
+// @ts-ignore
 const Long = require('long')
+// @ts-ignore
+const ByteBuffer = require('bytebuffer')
 
 function testByTable() {
     const testData = livedoc.myTestData()

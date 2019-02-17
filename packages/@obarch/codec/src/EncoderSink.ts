@@ -1,4 +1,4 @@
-const Long = require('long')
+import Long from 'long'
 
 const SLASH = '/'.charCodeAt(0)
 const BACKSLASH = '\\'.charCodeAt(0)
@@ -35,6 +35,13 @@ export default class EncoderSink {
                 this.builder += val[i]
             }
         }
+        this.builder += '"'
+        return this
+    }
+
+    encodeBytes(val: Uint8Array): EncoderSink {
+        this.builder += '"'
+        console.log(val[0])
         this.builder += '"'
         return this
     }

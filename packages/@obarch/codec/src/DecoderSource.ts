@@ -1,7 +1,5 @@
 import * as Long from 'long'
 import {fromNumber as longFromNumber} from 'long'
-import * as ByteBuffer from 'bytebuffer'
-import {allocate as allocateByteBuffer} from 'bytebuffer'
 
 const A = 'A'.charCodeAt(0)
 const SEMICOLON = ';'.charCodeAt(0)
@@ -219,8 +217,7 @@ export default class DecoderSource {
         throw 'expect closing "'
     }
 
-    decodeBytes(): ByteBuffer {
-        const bytes = allocateByteBuffer()
-        return bytes
+    decodeBytes(): Uint8Array {
+        return new Uint8Array(0)
     }
 }

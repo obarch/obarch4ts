@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "devDependencies": {
     "@obarch/livedoc": "^1.0.1",
-    "@types/bytebuffer": "^5.0.40",
     "@types/jest": "^24.0.0",
     "@types/markdown-it": "^0.0.7",
     "@types/node": "^10.12.21",
@@ -15,7 +14,6 @@
   },
   "dependencies": {
     "@types/long": "^4.0.0",
-    "bytebuffer": "^5.0.1",
     "long": "^4.0.0"
   }
 }
