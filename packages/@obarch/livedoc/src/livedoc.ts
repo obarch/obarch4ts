@@ -18,11 +18,15 @@ expect.extend({
     },
 });
 
-class Table {
+export class Table {
     head: string[] = []
     body: string[][] = [];
 
-    * [Symbol.iterator]() {
+    [Symbol.iterator]() {
+        return this.rows()
+    }
+
+    * rows() {
         for (let row of this.body) {
             let namedRow: Record<string, string> = {}
             for (let i = 0; i < this.head.length; i++) {

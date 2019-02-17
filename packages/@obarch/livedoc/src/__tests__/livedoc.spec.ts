@@ -2,7 +2,11 @@ import {myTestData} from "../livedoc"
 
 test('one level table', () => {
     const testData = myTestData()
-    expect(Array.from(testData.table)).toEqual([
+    let rows: any[] = []
+    for (let row of testData.table) {
+        rows.push(row)
+    }
+    expect(rows).toEqual([
         {col1: '1.1', col2: '1.2'},
         {col1: '2.1', col2: '2.2'}
     ])

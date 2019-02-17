@@ -7,7 +7,8 @@ const Long = require('long')
 
 function testByTable() {
     const testData = livedoc.myTestData()
-    for (let $row of testData.table) {
+    const table = testData.table
+    for (let $row of table) {
         for (let code of testData.codes) {
             eval(code.content)
         }
@@ -38,6 +39,10 @@ describe('string', () => {
     test('invalid utf8', testByList)
 })
 
+describe('bytes', () => {
+    test('valid', testByTable)
+})
+
 describe('integer', () => {
     test('decode', testByTable)
     test('encode/decode', testByTable)
@@ -54,3 +59,4 @@ describe('double', () => {
     test('valid', testByTable)
     test('invalid', testByList)
 })
+

@@ -2,7 +2,7 @@
 
 ## decode
 
-```typescript
+```js
 const val = 'true' === $row.decoded
 expect(new DecoderSource($row.encoded).decodeNull())
     .toEqual(val)
@@ -16,7 +16,7 @@ expect(new DecoderSource($row.encoded).decodeNull())
 
 ## encode
 
-```typescript
+```js
 const val = eval($row.decoded)
 expect(new EncoderSink().encodeObject(val).toString())
     .toEqual($row.encoded)
@@ -31,13 +31,13 @@ expect(new EncoderSink().encodeObject(val).toString())
 
 ## valid
 
-```typescript
+```js
 const val = 'true' === $row.decoded
 expect(new DecoderSource($row.encoded).decodeBoolean())
 	.toEqual(val)
 ```
 
-```typescript
+```js
 const val = 'true' === $row.decoded
 expect(new EncoderSink().encodeBoolean(val).toString())
     .toEqual($row.encoded)
@@ -50,7 +50,7 @@ expect(new EncoderSink().encodeBoolean(val).toString())
 
 ## invalid
 
-```typescript
+```js
 expect(() => new DecoderSource($item).decodeBoolean())
 	.toThrow()
 ```
@@ -63,12 +63,12 @@ expect(() => new DecoderSource($item).decodeBoolean())
 
 ## valid
 
-```typescript
+```js
 expect(new DecoderSource($row.encoded).decodeString())
 	.toEqual($row.decoded)
 ```
 
-```typescript
+```js
 expect(new EncoderSink().encodeString($row.decoded).toString())
 	.toEqual($row.encoded)
 ```
@@ -88,7 +88,7 @@ expect(new EncoderSink().encodeString($row.decoded).toString())
 
 ## decode utf8
 
-```typescript
+```js
 expect(new DecoderSource($row.encoded).decodeString())
 	.toEqual($row.decoded)
 ```
@@ -100,7 +100,7 @@ expect(new DecoderSource($row.encoded).decodeString())
 
 ## invalid
 
-```typescript
+```js
 expect(() => new DecoderSource($item).decodeString())
 	.toThrow()
 ```
@@ -111,7 +111,7 @@ expect(() => new DecoderSource($item).decodeString())
 
 ## invalid utf8
 
-```typescript
+```js
 expect(() => new DecoderSource($item).decodeString())
 	.toThrow(InvalidUTF8Error)
 ```
@@ -119,11 +119,25 @@ expect(() => new DecoderSource($item).decodeString())
 * `"\\OE\\AA\\AA"`
 * `"\\MC\\AA"`
 
+# bytes
+
+## valid
+
+```js
+const val = ByteBuffer.wrap(eval($row.decoded))
+expect(new EncoderSink().encodeBytes(val).toString())
+    .toEqual($row.encoded)
+```
+
+| encoded | decoded |
+| --- | --- |
+| `"hello"` | `[0x68, 0x65, 0x6c, 0x6c, 0x6f]` |
+
 # integer
 
 ## decode
 
-```typescript
+```js
 const val = parseInt($row.decoded)
 expect(new DecoderSource($row.encoded).decodeInteger())
 	.toEqual(val)
@@ -141,13 +155,13 @@ expect(new DecoderSource($row.encoded).decodeInteger())
 
 ## encode/decode
 
-```typescript
+```js
 const val = parseInt($row.decoded)
 expect(new EncoderSink().encodeInteger(val).toString())
     .toEqual($row.encoded)
 ```
 
-```typescript
+```js
 const val = parseInt($row.decoded)
 expect(new DecoderSource($row.encoded).decodeInteger())
 	.toEqual(val)
@@ -161,7 +175,7 @@ expect(new DecoderSource($row.encoded).decodeInteger())
 
 ## decode invalid
 
-```typescript
+```js
 expect(() => new DecoderSource($item).decodeInteger(), $item)
 	.toThrow()
 ```
@@ -171,7 +185,7 @@ expect(() => new DecoderSource($item).decodeInteger(), $item)
 
 ## encode invalid
 
-```typescript
+```js
 const val = eval($item)
 expect(() => new EncoderSink().encodeInteger(val))
     .toThrow()
@@ -184,13 +198,13 @@ expect(() => new EncoderSink().encodeInteger(val))
 
 ## valid
 
-```typescript
+```js
 const val = Long.fromString($row.decoded)
 expect(new EncoderSink().encodeLong(val).toString())
     .toEqual($row.encoded)
 ```
 
-```typescript
+```js
 const val = Long.fromString($row.decoded)
 expect(new DecoderSource($row.encoded).decodeLong())
 	.toEqual(val)
@@ -210,7 +224,7 @@ expect(new DecoderSource($row.encoded).decodeLong())
 
 ## decode invalid
 
-```typescript
+```js
 expect(() => new DecoderSource($item).decodeLong(), $item)
 	.toThrow()
 ```
@@ -222,13 +236,13 @@ expect(() => new DecoderSource($item).decodeLong(), $item)
 
 ## valid
 
-```typescript
+```js
 const val = parseFloat($row.decoded)
 expect(new EncoderSink().encodeDouble(val).toString())
     .toEqual($row.encoded)
 ```
 
-```typescript
+```js
 const val = parseFloat($row.decoded)
 expect(new DecoderSource($row.encoded).decodeDouble())
 	.toBeCloseTo(val, 5)
@@ -242,7 +256,7 @@ expect(new DecoderSource($row.encoded).decodeDouble())
 
 ## invalid
 
-```typescript
+```js
 expect(() => new DecoderSource($item).decodeDouble())
 	.toThrow()
 ```

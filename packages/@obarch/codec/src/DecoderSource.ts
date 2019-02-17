@@ -1,5 +1,7 @@
 import * as Long from 'long'
 import {fromNumber as longFromNumber} from 'long'
+import * as ByteBuffer from 'bytebuffer'
+import {allocate as allocateByteBuffer} from 'bytebuffer'
 
 const A = 'A'.charCodeAt(0)
 const SEMICOLON = ';'.charCodeAt(0)
@@ -142,50 +144,49 @@ export default class DecoderSource {
                 this.offset = i + 1;
                 return true
             }
-            if (c === '\\') {
-                if (this.buf[i + 1] !== '\\') {
-                    throw 'expect \\'
-                }
-                const b1 = this.decodeByteEscaped(i)
-                i += 4
-                if ((b1 & 0b10000000) == 0b00000000) {
-                    str += String.fromCharCode(b1)
-                } else if ((b1 & 0b11100000) == 0b11000000) {
-                    const b2 = this.decodeByteEscaped(i)
-                    i += 4
-                    const b2Invalid = (b2 & 0b11000000) != 0b10000000
-                    if (b2Invalid) {
-                        throw new InvalidUTF8Error('second byte invalid')
-                    }
-                    str += String.fromCharCode(((b1 & 0x1f) << 6) | (b2 & 0x3f));
-                } else if ((b1 & 0b11110000) == 0b11100000) {
-                    const isSurrogate = 0xED <= b1 && b1 <= 0xEF
-                    if (isSurrogate) {
-                        throw new InvalidUTF8Error('surrogate should not be encoded in escaped form')
-                    }
-                    const b2 = this.decodeByteEscaped(i)
-                    i += 4
-                    const b2Invalid = (b2 & 0b11000000) != 0b10000000
-                    if (b2Invalid) {
-                        throw new InvalidUTF8Error('second byte invalid')
-                    }
-                    const b3 = this.decodeByteEscaped(i)
-                    i += 4
-                    const b3Invalid = (b3 & 0b11000000) != 0b10000000
-                    if (b3Invalid) {
-                        throw new InvalidUTF8Error('third byte invalid')
-                    }
-                    str += String.fromCharCode(((b1 & 0x0f) << 12)
-                        | ((b2 & 0x3f) << 6)
-                        | (b3 & 0x3f));
-                } else {
-                    throw new InvalidUTF8Error('decode escaped string failed')
-                }
-                continue
+            if (c !== '\\') {
+                builder[0] = str
+                this.offset = i;
+                return false
             }
-            builder[0] = str
-            this.offset = i;
-            return false
+            if (this.buf[i + 1] !== '\\') {
+                throw 'expect \\'
+            }
+            const b1 = this.decodeByteEscaped(i)
+            i += 4
+            if ((b1 & 0b10000000) == 0b00000000) {
+                str += String.fromCharCode(b1)
+            } else if ((b1 & 0b11100000) == 0b11000000) {
+                const b2 = this.decodeByteEscaped(i)
+                i += 4
+                const b2Invalid = (b2 & 0b11000000) != 0b10000000
+                if (b2Invalid) {
+                    throw new InvalidUTF8Error('second byte invalid')
+                }
+                str += String.fromCharCode(((b1 & 0x1f) << 6) | (b2 & 0x3f));
+            } else if ((b1 & 0b11110000) == 0b11100000) {
+                const isSurrogate = 0xED <= b1 && b1 <= 0xEF
+                if (isSurrogate) {
+                    throw new InvalidUTF8Error('surrogate should not be encoded in escaped form')
+                }
+                const b2 = this.decodeByteEscaped(i)
+                i += 4
+                const b2Invalid = (b2 & 0b11000000) != 0b10000000
+                if (b2Invalid) {
+                    throw new InvalidUTF8Error('second byte invalid')
+                }
+                const b3 = this.decodeByteEscaped(i)
+                i += 4
+                const b3Invalid = (b3 & 0b11000000) != 0b10000000
+                if (b3Invalid) {
+                    throw new InvalidUTF8Error('third byte invalid')
+                }
+                str += String.fromCharCode(((b1 & 0x0f) << 12)
+                    | ((b2 & 0x3f) << 6)
+                    | (b3 & 0x3f));
+            } else {
+                throw new InvalidUTF8Error('decode escaped string failed')
+            }
         }
         throw 'expect closing "'
     }
@@ -216,5 +217,10 @@ export default class DecoderSource {
             i++
         }
         throw 'expect closing "'
+    }
+
+    decodeBytes(): ByteBuffer {
+        const bytes = allocateByteBuffer()
+        return bytes
     }
 }
