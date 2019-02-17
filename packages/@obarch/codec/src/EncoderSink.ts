@@ -2,6 +2,8 @@ const SLASH = '/'.charCodeAt(0)
 const BACKSLASH = '\\'.charCodeAt(0)
 const DOUBLE_QUOTE = '"'.charCodeAt(0)
 const A = 'A'.charCodeAt(0)
+const SEMICOLON = ';'.charCodeAt(0)
+const MASK = (1 << 5) - 1
 
 export default class EncoderSink {
     private builder: string = ''
@@ -31,6 +33,21 @@ export default class EncoderSink {
                 this.builder += val[i]
             }
         }
+        this.builder += '"'
+        return this
+    }
+
+    encodeInteger(val: number): EncoderSink {
+        this.builder += '"\\b'
+        this.builder += String.fromCharCode(
+            SEMICOLON + ((val >>> 30) & MASK),
+            SEMICOLON + ((val >>> 25) & MASK),
+            SEMICOLON + ((val >>> 20) & MASK),
+            SEMICOLON + ((val >>> 15) & MASK),
+            SEMICOLON + ((val >>> 10) & MASK),
+            SEMICOLON + ((val >>> 5) & MASK),
+            SEMICOLON + (val & MASK),
+        )
         this.builder += '"'
         return this
     }

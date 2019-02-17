@@ -3,8 +3,9 @@
 ## decode
 
 ```typescript
+const val = 'true' === $row.decoded
 expect(new DecoderSource($row.encoded).decodeNull())
-    .toEqual('true' === $row.decoded)
+    .toEqual(val)
 ```
 
 | encoded | decoded |
@@ -16,7 +17,8 @@ expect(new DecoderSource($row.encoded).decodeNull())
 ## encode
 
 ```typescript
-expect(new EncoderSink().encodeObject(eval($row.decoded)).toString())
+const val = eval($row.decoded)
+expect(new EncoderSink().encodeObject(val).toString())
     .toEqual($row.encoded)
 ```
 
@@ -30,12 +32,14 @@ expect(new EncoderSink().encodeObject(eval($row.decoded)).toString())
 ## valid
 
 ```typescript
+const val = 'true' === $row.decoded
 expect(new DecoderSource($row.encoded).decodeBoolean())
-	.toEqual('true' === $row.decoded)
+	.toEqual(val)
 ```
 
 ```typescript
-expect(new EncoderSink().encodeBoolean('true' === $row.decoded).toString())
+const val = 'true' === $row.decoded
+expect(new EncoderSink().encodeBoolean(val).toString())
     .toEqual($row.encoded)
 ```
 
@@ -90,3 +94,54 @@ expect(() => new DecoderSource($item).decodeString())
 
 * `"hello`
 * `"\"`
+
+# integer
+
+## decode
+
+```typescript
+const val = parseInt($row.decoded)
+expect(new DecoderSource($row.encoded).decodeInteger())
+	.toEqual(val)
+```
+
+| encoded | decoded |
+| --- | --- |
+| `"\b;;;;;;;;;;;;;Z"` | 31 |
+| `"\b;;;;;;;;;;;;C;"` | 256 |
+| `"\b;;;;;;;;;;;<Y;"` | 1984 |
+| `"\b;;;;;;;;;;;;;;"` | 0 |
+| `"\b;;;;;;;;;;;;;<"` | 1 |
+| `"\b<JZZZZZZZZZZZZ"` | -1 |
+| `"\b<JZZZZZZZZZZZY"` | -2 |
+
+## encode/decode
+
+```typescript
+const val = parseInt($row.decoded)
+expect(new EncoderSink().encodeInteger(val).toString())
+    .toEqual($row.encoded)
+```
+
+```typescript
+const val = parseInt($row.decoded)
+expect(new DecoderSource($row.encoded).decodeInteger())
+	.toEqual(val)
+```
+
+| encoded | decoded |
+| --- | --- |
+| `"\b;;;;;;Z"` | 31 |
+| `"\b<ZZZZZZ"` | 2147483647 |
+| `"\b=;;;;;;"` | -2147483648 |
+
+## invalid
+
+```typescript
+expect(() => new DecoderSource($row.encoded).decodeInteger())
+	.toThrow()
+```
+
+* `"30"`
+* `"\b"`
+* `"\b;`

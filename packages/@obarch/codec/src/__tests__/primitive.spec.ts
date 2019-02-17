@@ -32,3 +32,9 @@ describe('string', () => {
     test('valid', testByTable)
     test('invalid', testByList)
 })
+
+describe('integer', () => {
+    test('decode', testByTable)
+    test('encode/decode', testByTable)
+    test('invalid', testByList)
+})
