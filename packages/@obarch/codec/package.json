@@ -4,11 +4,15 @@
   "devDependencies": {
     "@obarch/livedoc": "^1.0.1",
     "@types/jest": "^24.0.0",
-    "@types/node": "^10.12.21",
     "@types/markdown-it": "^0.0.7",
+    "@types/node": "^10.12.21",
     "jest": "^23.6.0",
     "markdown-it": "^8.4.2",
     "ts-jest": "^23.10.5",
     "typescript": "^3.3.1"
+  },
+  "dependencies": {
+    "@types/long": "^4.0.0",
+    "long": "^4.0.0"
   }
 }

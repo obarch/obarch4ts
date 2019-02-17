@@ -1,3 +1,5 @@
+import * as Long from 'long'
+
 const SLASH = '/'.charCodeAt(0)
 const BACKSLASH = '\\'.charCodeAt(0)
 const DOUBLE_QUOTE = '"'.charCodeAt(0)
@@ -58,6 +60,32 @@ export default class EncoderSink {
             SEMICOLON + (val & MASK),
         )
         this.builder += '"'
+        return this
+    }
+
+    encodeLong(val: Long): EncoderSink {
+        this.builder += '"\\b'
+        this.builder += String.fromCharCode(
+            SEMICOLON + val.shiftRightUnsigned(63).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(60).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(55).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(50).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(45).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(40).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(35).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(30).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(25).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(20).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(15).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(10).and(MASK).toNumber(),
+            SEMICOLON + val.shiftRightUnsigned(5).and(MASK).toNumber(),
+            SEMICOLON + val.and(MASK).toNumber()
+        )
+        this.builder += '"'
+        return this
+    }
+
+    encodeFloat(val: number): EncoderSink {
         return this
     }
 

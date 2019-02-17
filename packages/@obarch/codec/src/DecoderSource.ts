@@ -1,3 +1,6 @@
+import * as Long from 'long'
+import {fromNumber as longFromNumber} from 'long'
+
 const A = 'A'.charCodeAt(0)
 const SEMICOLON = ';'.charCodeAt(0)
 
@@ -54,6 +57,23 @@ export default class DecoderSource {
                 return val;
             }
             val = (val << 5) + (this.buf.charCodeAt(i) - SEMICOLON);
+        }
+        throw 'expect "'
+    }
+
+    decodeLong(): Long {
+        let isValid = this.buf[this.offset] === '"' && this.buf[this.offset + 1] === '\\' && this.buf[this.offset + 2] === 'b'
+        if (!isValid) {
+            throw 'expect "\\b'
+        }
+        this.offset += 3
+        let val = Long.ZERO
+        for (let i = this.offset; i < this.buf.length; i++) {
+            if (this.buf[i] == '"') {
+                this.offset = i + 1;
+                return val;
+            }
+            val = val.shiftLeft(5).add(longFromNumber(this.buf.charCodeAt(i) - SEMICOLON));
         }
         throw 'expect "'
     }

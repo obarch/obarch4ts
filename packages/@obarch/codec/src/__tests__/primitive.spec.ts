@@ -1,6 +1,8 @@
 const DecoderSource = require('../DecoderSource').default
 const EncoderSink = require('../EncoderSink').default
-const livedoc = require("@obarch/livedoc")
+const livedoc = require('@obarch/livedoc')
+//@ts-ignore
+const Long = require('long')
 
 function testByTable() {
     const testData = livedoc.myTestData()
@@ -38,4 +40,13 @@ describe('integer', () => {
     test('encode/decode', testByTable)
     test('decode invalid', testByList)
     test('encode invalid', testByList)
+})
+
+describe('long', () => {
+    test('valid', testByTable)
+    test('decode invalid', testByList)
+})
+
+describe('float', () => {
+    test('valid', testByTable)
 })

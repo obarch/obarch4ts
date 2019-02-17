@@ -156,3 +156,57 @@ expect(() => new EncoderSink().encodeInteger(val))
 
 * `1.1`
 * `2147483648`
+
+# long
+
+## valid
+
+```typescript
+const val = Long.fromString($row.decoded)
+expect(new EncoderSink().encodeLong(val).toString())
+    .toEqual($row.encoded)
+```
+
+```typescript
+const val = Long.fromString($row.decoded)
+expect(new DecoderSource($row.encoded).decodeLong())
+	.toEqual(val)
+```
+
+| encoded | decoded |
+| --- | --- |
+| `"\b;;;;;;;;;;;;;Z"` | 31 |
+| `"\b;;;;;;;;;;;;C;"` | 256 |
+| `"\b;;;;;;;;;;;<Y;"` | 1984 |
+| `"\b;;;;;;;;;;;;;;"` | 0 |
+| `"\b;;;;;;;;;;;;;<"` | 1 |
+| `"\b<JZZZZZZZZZZZZ"` | -1 |
+| `"\b<JZZZZZZZZZZZY"` | -2 |
+| `"\b;BZZZZZZZZZZZZ"` | 9223372036854775807 |
+| `"\b<C;;;;;;;;;;;;"` | -9223372036854775808 |
+
+## decode invalid
+
+```typescript
+expect(() => new DecoderSource($row.encoded).decodeLong())
+	.toThrow()
+```
+
+* `"30"`
+* `"\b"`
+* `"\b;`
+
+
+# float
+
+## valid
+
+```typescript
+const val = parseFloat($row.decoded)
+expect(new EncoderSink().encodeFloat(val).toString())
+    .toEqual($row.encoded)
+```
+
+| encoded | decoded |
+| --- | --- |
+| `"\f;;;;;;;;;;;;;;"` | 0.0 |
