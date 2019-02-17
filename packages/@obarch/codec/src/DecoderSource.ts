@@ -61,8 +61,8 @@ export default class DecoderSource {
         throw 'expect "'
     }
 
-    decodeLong(): Long {
-        let isValid = this.buf[this.offset] === '"' && this.buf[this.offset + 1] === '\\' && this.buf[this.offset + 2] === 'b'
+    decodeLong(type='b'): Long {
+        let isValid = this.buf[this.offset] === '"' && this.buf[this.offset + 1] === '\\' && this.buf[this.offset + 2] === type
         if (!isValid) {
             throw 'expect "\\b'
         }
@@ -76,6 +76,23 @@ export default class DecoderSource {
             val = val.shiftLeft(5).add(longFromNumber(this.buf.charCodeAt(i) - SEMICOLON));
         }
         throw 'expect "'
+    }
+
+    decodeDouble(): number {
+        const longBits = this.decodeLong('f')
+        var lo = longBits.low,
+            hi = longBits.high;
+        var sign = (hi >> 31) * 2 + 1,
+            exponent = hi >>> 20 & 2047,
+            mantissa = 4294967296 * (hi & 1048575) + lo;
+        return exponent === 2047
+            ? mantissa
+                ? NaN
+                : sign * Infinity
+            : exponent === 0 // denormal
+                ? sign * 5e-324 * mantissa
+                : sign * Math.pow(2, exponent - 1075) * (mantissa + 4503599627370496);
+        return 0
     }
 
     decodeString(): string {

@@ -7,6 +7,7 @@
     "@types/markdown-it": "^0.0.7",
     "@types/node": "^10.12.21",
     "jest": "^23.6.0",
+    "jest-expect-message": "^1.0.2",
     "markdown-it": "^8.4.2",
     "ts-jest": "^23.10.5",
     "typescript": "^3.3.1"

@@ -1,4 +1,4 @@
-import * as Long from 'long'
+const Long = require('long')
 
 const SLASH = '/'.charCodeAt(0)
 const BACKSLASH = '\\'.charCodeAt(0)
@@ -65,6 +65,12 @@ export default class EncoderSink {
 
     encodeLong(val: Long): EncoderSink {
         this.builder += '"\\b'
+        this.encodeLongBody(val)
+        this.builder += '"'
+        return this
+    }
+
+    private encodeLongBody(val: Long) {
         this.builder += String.fromCharCode(
             SEMICOLON + val.shiftRightUnsigned(63).and(MASK).toNumber(),
             SEMICOLON + val.shiftRightUnsigned(60).and(MASK).toNumber(),
@@ -81,11 +87,36 @@ export default class EncoderSink {
             SEMICOLON + val.shiftRightUnsigned(5).and(MASK).toNumber(),
             SEMICOLON + val.and(MASK).toNumber()
         )
-        this.builder += '"'
-        return this
     }
 
-    encodeFloat(val: number): EncoderSink {
+    encodeDouble(val: number): EncoderSink {
+        this.builder += '"\\f'
+        const sign = val < 0 ? 1 : 0
+        if (sign)
+            val = -val;
+        if (val === 0) {
+            this.encodeLongBody(new Long(0, 1 / val > 0 ? /* positive */ 0 : /* negative 0 */ 2147483648))
+        } else if (isNaN(val)) {
+            this.encodeLongBody(new Long(0, 2146959360))
+        } else if (val > 1.7976931348623157e+308) { // +-Infinity
+            this.encodeLongBody(new Long(0, (sign << 31 | 2146435072) >>> 0))
+        } else {
+            var mantissa;
+            if (val < 2.2250738585072014e-308) { // denormal
+                mantissa = val / 5e-324;
+                this.encodeLongBody(new Long(mantissa >>> 0, (sign << 31 | mantissa / 4294967296) >>> 0))
+            } else {
+                var exponent = Math.floor(Math.log(val) / Math.LN2);
+                if (exponent === 1024)
+                    exponent = 1023;
+                mantissa = val * Math.pow(2, -exponent)
+                this.encodeLongBody(new Long(
+                    mantissa * 4503599627370496 >>> 0,
+                    (sign << 31 | exponent + 1023 << 20 | mantissa * 1048576 & 1048575) >>> 0
+                ))
+            }
+        }
+        this.builder += '"'
         return this
     }
 

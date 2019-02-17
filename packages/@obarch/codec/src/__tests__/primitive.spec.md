@@ -138,13 +138,12 @@ expect(new DecoderSource($row.encoded).decodeInteger())
 ## decode invalid
 
 ```typescript
-expect(() => new DecoderSource($row.encoded).decodeInteger())
+expect(() => new DecoderSource($item).decodeInteger(), $item)
 	.toThrow()
 ```
 
 * `"30"`
-* `"\b"`
-* `"\b;`
+* `"\b`
 
 ## encode invalid
 
@@ -188,25 +187,41 @@ expect(new DecoderSource($row.encoded).decodeLong())
 ## decode invalid
 
 ```typescript
-expect(() => new DecoderSource($row.encoded).decodeLong())
+expect(() => new DecoderSource($item).decodeLong(), $item)
 	.toThrow()
 ```
 
 * `"30"`
-* `"\b"`
-* `"\b;`
+* `"\b`
 
-
-# float
+# double
 
 ## valid
 
 ```typescript
 const val = parseFloat($row.decoded)
-expect(new EncoderSink().encodeFloat(val).toString())
+expect(new EncoderSink().encodeDouble(val).toString())
     .toEqual($row.encoded)
+```
+
+```typescript
+const val = parseFloat($row.decoded)
+expect(new DecoderSource($row.encoded).decodeDouble())
+	.toBeCloseTo(val, 5)
 ```
 
 | encoded | decoded |
 | --- | --- |
 | `"\f;;;;;;;;;;;;;;"` | 0.0 |
+| `"\f;>ZW;;;;;;;;;;"` | 1.0 |
+| `"\f;>ZWGTNAGTNAGU"` | 1.1 |
+
+## invalid
+
+```typescript
+expect(() => new DecoderSource($item).decodeDouble())
+	.toThrow()
+```
+
+* `"\b;;;;;;;;;;;;;;"`
+* `"\f;;;;;;;;;;;;;;`

@@ -47,6 +47,7 @@ describe('long', () => {
     test('decode invalid', testByList)
 })
 
-describe('float', () => {
+describe('double', () => {
     test('valid', testByTable)
+    test('invalid', testByList)
 })
