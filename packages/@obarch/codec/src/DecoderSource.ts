@@ -4,6 +4,13 @@ import {fromNumber as longFromNumber} from 'long'
 const A = 'A'.charCodeAt(0)
 const SEMICOLON = ';'.charCodeAt(0)
 
+export class InvalidUTF8Error extends Error {
+    constructor(m: string) {
+        super(m);
+        Object.setPrototypeOf(this, InvalidUTF8Error.prototype);
+    }
+}
+
 export default class DecoderSource {
 
     private readonly buf: string
@@ -139,9 +146,41 @@ export default class DecoderSource {
                 if (this.buf[i + 1] !== '\\') {
                     throw 'expect \\'
                 }
-                const code = ((this.buf.charCodeAt(i + 2) - A) << 4) + this.buf.charCodeAt(i + 3) - A
-                str += String.fromCharCode(code)
+                const b1 = this.decodeByteEscaped(i)
                 i += 4
+                if ((b1 & 0b10000000) == 0b00000000) {
+                    str += String.fromCharCode(b1)
+                } else if ((b1 & 0b11100000) == 0b11000000) {
+                    const b2 = this.decodeByteEscaped(i)
+                    i += 4
+                    const b2Invalid = (b2 & 0b11000000) != 0b10000000
+                    if (b2Invalid) {
+                        throw new InvalidUTF8Error('second byte invalid')
+                    }
+                    str += String.fromCharCode(((b1 & 0x1f) << 6) | (b2 & 0x3f));
+                } else if ((b1 & 0b11110000) == 0b11100000) {
+                    const isSurrogate = 0xED <= b1 && b1 <= 0xEF
+                    if (isSurrogate) {
+                        throw new InvalidUTF8Error('surrogate should not be encoded in escaped form')
+                    }
+                    const b2 = this.decodeByteEscaped(i)
+                    i += 4
+                    const b2Invalid = (b2 & 0b11000000) != 0b10000000
+                    if (b2Invalid) {
+                        throw new InvalidUTF8Error('second byte invalid')
+                    }
+                    const b3 = this.decodeByteEscaped(i)
+                    i += 4
+                    const b3Invalid = (b3 & 0b11000000) != 0b10000000
+                    if (b3Invalid) {
+                        throw new InvalidUTF8Error('third byte invalid')
+                    }
+                    str += String.fromCharCode(((b1 & 0x0f) << 12)
+                        | ((b2 & 0x3f) << 6)
+                        | (b3 & 0x3f));
+                } else {
+                    throw new InvalidUTF8Error('decode escaped string failed')
+                }
                 continue
             }
             builder[0] = str
@@ -149,6 +188,16 @@ export default class DecoderSource {
             return false
         }
         throw 'expect closing "'
+    }
+
+    private decodeByteEscaped(i: number): number {
+        if (this.buf[i] != '\\') {
+            throw 'expect \\'
+        }
+        if (this.buf[i + 1] != '\\') {
+            throw 'expect \\'
+        }
+        return ((this.buf.charCodeAt(i + 2) - A) << 4) + this.buf.charCodeAt(i + 3) - A
     }
 
     private decodeStringRaw(builder: [string]): boolean {

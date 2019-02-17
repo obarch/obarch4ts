@@ -1,4 +1,5 @@
 const DecoderSource = require('../DecoderSource').default
+const InvalidUTF8Error = require('../DecoderSource').InvalidUTF8Error
 const EncoderSink = require('../EncoderSink').default
 const livedoc = require('@obarch/livedoc')
 //@ts-ignore
@@ -32,7 +33,9 @@ describe('boolean', () => {
 
 describe('string', () => {
     test('valid', testByTable)
+    test('decode utf8', testByTable)
     test('invalid', testByList)
+    test('invalid utf8', testByList)
 })
 
 describe('integer', () => {

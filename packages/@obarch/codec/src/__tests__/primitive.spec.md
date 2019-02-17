@@ -85,6 +85,19 @@ expect(new EncoderSink().encodeString($row.decoded).toString())
 | `"\\CP"` | `/` |
 | `"h\\CCe\\CCl\\CCl\\CCo"` | `h"e"l"l"o` |
 
+
+## decode utf8
+
+```typescript
+expect(new DecoderSource($row.encoded).decodeString())
+	.toEqual($row.decoded)
+```
+
+| encoded | decoded |
+| --- | --- |
+| `"\\OE\\LI\\KN"` | `中` |
+| `"\\MC\\KC"` | `¢` |
+
 ## invalid
 
 ```typescript
@@ -94,6 +107,17 @@ expect(() => new DecoderSource($item).decodeString())
 
 * `"hello`
 * `"\"`
+* `"\\OE"`
+
+## invalid utf8
+
+```typescript
+expect(() => new DecoderSource($item).decodeString())
+	.toThrow(InvalidUTF8Error)
+```
+
+* `"\\OE\\AA\\AA"`
+* `"\\MC\\AA"`
 
 # integer
 
