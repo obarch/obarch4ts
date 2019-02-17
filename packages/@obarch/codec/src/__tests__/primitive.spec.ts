@@ -4,8 +4,6 @@ const EncoderSink = require('../EncoderSink').default
 const livedoc = require('@obarch/livedoc')
 // @ts-ignore
 const Long = require('long')
-// @ts-ignore
-const ByteBuffer = require('bytebuffer')
 
 function testByTable() {
     const testData = livedoc.myTestData()
@@ -43,6 +41,7 @@ describe('string', () => {
 
 describe('bytes', () => {
     test('valid', testByTable)
+    test('invalid', testByList)
 })
 
 describe('integer', () => {

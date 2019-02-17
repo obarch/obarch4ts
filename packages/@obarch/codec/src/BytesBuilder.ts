@@ -22,9 +22,7 @@ export default class BytesBuilder {
     }
 
     toBytes(): Uint8Array {
-        let copy = new Uint8Array(this.offset)
-        copy.set(this.buf.slice(0, this.offset))
-        return copy
+        return this.buf.slice(0, this.offset)
     }
 
     toArray(): number[] {

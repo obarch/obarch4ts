@@ -124,14 +124,37 @@ expect(() => new DecoderSource($item).decodeString())
 ## valid
 
 ```js
-const val = ByteBuffer.wrap(eval($row.decoded))
+const val = Uint8Array.from(eval($row.decoded))
 expect(new EncoderSink().encodeBytes(val).toString())
     .toEqual($row.encoded)
+```
+
+```js
+const val = Uint8Array.from(eval($row.decoded))
+expect(new DecoderSource($row.encoded).decodeBytes())
+    .toEqual(val)
 ```
 
 | encoded | decoded |
 | --- | --- |
 | `"hello"` | `[0x68, 0x65, 0x6c, 0x6c, 0x6f]` |
+| `"\\AA"` | `[0x00]` |
+| `"\\FM"` | `[0x5c]` |
+| `"\\CP"` | `[0x2f]` |
+| `"中文"` | `[0xe4, 0xb8, 0xad, 0xe6, 0x96, 0x87]` |
+| `"\\OE\\AA\\AA"` | `[0xe4, 0x00, 0x00]` |
+| `"¢"` | `[0xc2, 0xa2]` |
+| `"\\MC\\AA"` | `[0xc2, 0x00]` |
+
+## invalid
+
+```js
+expect(() => new DecoderSource($item).decodeBytes())
+	.toThrow()
+```
+
+* `"hello`
+* `"\"`
 
 # integer
 

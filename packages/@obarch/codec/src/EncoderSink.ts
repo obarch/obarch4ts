@@ -28,9 +28,8 @@ export default class EncoderSink {
         this.builder += '"'
         for (let i = 0; i < val.length; i++) {
             const c = val.charCodeAt(i)
-            if (c < 0x20 || c === SLASH || c === BACKSLASH || c === DOUBLE_QUOTE) {
-                this.builder += '\\\\'
-                this.builder += String.fromCharCode(A + (c >>> 4), A + (c & 0xF))
+            if (this.shouldEscape(c)) {
+                this.encodeByteEscaped(c)
             } else {
                 this.builder += val[i]
             }
@@ -41,9 +40,62 @@ export default class EncoderSink {
 
     encodeBytes(val: Uint8Array): EncoderSink {
         this.builder += '"'
-        console.log(val[0])
+        for (let i = 0; i < val.length;) {
+            const b1 = val[i]
+            i++
+            if (this.shouldEscape(b1)) {
+                this.encodeByteEscaped(b1)
+                continue
+            }
+            if ((b1 & 0b10000000) == 0b00000000) {
+                this.builder += String.fromCharCode(b1)
+            } else if ((b1 & 0b11100000) == 0b11000000) {
+                const b2 = val[i]
+                const b2Invalid = (b2 & 0b11000000) != 0b10000000
+                if (b2Invalid) {
+                    this.encodeByteEscaped(b1)
+                    continue
+                }
+                i++
+                this.builder += String.fromCharCode(((b1 & 0x1f) << 6) | (b2 & 0x3f))
+            } else if ((b1 & 0b11110000) == 0b11100000) {
+                const isSurrogate = 0xED <= b1 && b1 <= 0xEF
+                if (isSurrogate) {
+                    this.encodeByteEscaped(b1)
+                    continue
+                }
+                const b2 = val[i]
+                const b2Invalid = (b2 & 0b11000000) != 0b10000000
+                if (b2Invalid) {
+                    this.encodeByteEscaped(b1)
+                    continue
+                }
+                const b3 = val[i + 1]
+                const b3Invalid = (b3 & 0b11000000) != 0b10000000
+                if (b3Invalid) {
+                    this.encodeByteEscaped(b1)
+                    continue
+                }
+                i += 2
+                this.builder += String.fromCharCode(((b1 & 0x0f) << 12)
+                    | ((b2 & 0x3f) << 6)
+                    | (b3 & 0x3f));
+            } else {
+                this.encodeByteEscaped(b1)
+            }
+        }
         this.builder += '"'
         return this
+    }
+
+    private shouldEscape(b: number): boolean {
+        const isControlCharacter = 0 <= b && b < 0x20
+        return isControlCharacter || b === SLASH || b === BACKSLASH || b === DOUBLE_QUOTE
+    }
+
+    private encodeByteEscaped(b: number): void {
+        this.builder += '\\\\'
+        this.builder += String.fromCharCode(A + (b >>> 4), A + (b & 0xF))
     }
 
     encodeInteger(val: number): EncoderSink {

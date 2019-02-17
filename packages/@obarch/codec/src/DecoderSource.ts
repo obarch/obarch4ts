@@ -1,8 +1,11 @@
 import * as Long from 'long'
 import {fromNumber as longFromNumber} from 'long'
+import BytesBuilder from "./BytesBuilder"
 
 const A = 'A'.charCodeAt(0)
 const SEMICOLON = ';'.charCodeAt(0)
+const DOUBLE_QUOTE = '"'.charCodeAt(0)
+const BACKSLASH = '\\'.charCodeAt(0)
 
 export class InvalidUTF8Error extends Error {
     constructor(m: string) {
@@ -68,7 +71,7 @@ export default class DecoderSource {
         throw 'expect "'
     }
 
-    decodeLong(type='b'): Long {
+    decodeLong(type = 'b'): Long {
         let isValid = this.buf[this.offset] === '"' && this.buf[this.offset + 1] === '\\' && this.buf[this.offset + 2] === type
         if (!isValid) {
             throw 'expect "\\b'
@@ -218,6 +221,39 @@ export default class DecoderSource {
     }
 
     decodeBytes(): Uint8Array {
-        return new Uint8Array(0)
+        if (this.buf[this.offset] !== '"') {
+            throw 'expect "'
+        }
+        this.offset++
+        let builder = new BytesBuilder()
+        for (let i = this.offset; i < this.buf.length;) {
+            const c = this.buf.charCodeAt(i)
+            if (c === BACKSLASH) {
+                builder.append(this.decodeByteEscaped(i))
+                i += 4
+                continue
+            }
+            if (c === DOUBLE_QUOTE) {
+                this.offset = i + 1
+                return builder.toBytes()
+            }
+            i++
+            if (c < 0x80) {
+                builder.append(c & 0x7F)
+            } else if (c < 0x800) {
+                builder.append(((c >> 6) & 0x1F) | 0xC0)
+                builder.append(((c & 0x3F) | 0x80))
+            } else if (c < 0x10000) {
+                builder.append(((c >> 12) & 0x0F) | 0xE0)
+                builder.append(((c >> 6) & 0x3F) | 0x80)
+                builder.append((c & 0x3F) | 0x80)
+            } else {
+                builder.append(((c >> 18) & 0x07) | 0xF0)
+                builder.append(((c >> 12) & 0x3F) | 0x80)
+                builder.append(((c >> 6) & 0x3F) | 0x80)
+                builder.append((c & 0x3F) | 0x80)
+            }
+        }
+        throw 'expect closing "'
     }
 }
