@@ -137,14 +137,14 @@ expect(new DecoderSource($row.encoded).decodeBytes())
 
 | encoded | decoded |
 | --- | --- |
-| `"\"hello"` | `[0x68, 0x65, 0x6c, 0x6c, 0x6f]` |
-| `"\"\\AA"` | `[0x00]` |
-| `"\"\\FM"` | `[0x5c]` |
-| `"\"\\CP"` | `[0x2f]` |
-| `"\"中文"` | `[0xe4, 0xb8, 0xad, 0xe6, 0x96, 0x87]` |
-| `"\"\\OE\\AA\\AA"` | `[0xe4, 0x00, 0x00]` |
-| `"\"¢"` | `[0xc2, 0xa2]` |
-| `"\"\\MC\\AA"` | `[0xc2, 0x00]` |
+| `"\bhello"` | `[0x68, 0x65, 0x6c, 0x6c, 0x6f]` |
+| `"\b\\AA"` | `[0x00]` |
+| `"\b\\FM"` | `[0x5c]` |
+| `"\b\\CP"` | `[0x2f]` |
+| `"\b中文"` | `[0xe4, 0xb8, 0xad, 0xe6, 0x96, 0x87]` |
+| `"\b\\OE\\AA\\AA"` | `[0xe4, 0x00, 0x00]` |
+| `"\b¢"` | `[0xc2, 0xa2]` |
+| `"\b\\MC\\AA"` | `[0xc2, 0x00]` |
 
 ## invalid
 
@@ -153,8 +153,8 @@ expect(() => new DecoderSource($item).decodeBytes())
 	.toThrow()
 ```
 
-* `"\"hello`
-* `"\"\"`
+* `"\bhello`
+* `"\b\"`
 * `""`
 
 # integer
@@ -169,13 +169,13 @@ expect(new DecoderSource($row.encoded).decodeInteger())
 
 | encoded | decoded |
 | --- | --- |
-| `"\b;;;;;;;;;;;;;Z"` | 31 |
-| `"\b;;;;;;;;;;;;C;"` | 256 |
-| `"\b;;;;;;;;;;;<Y;"` | 1984 |
-| `"\b;;;;;;;;;;;;;;"` | 0 |
-| `"\b;;;;;;;;;;;;;<"` | 1 |
-| `"\b<JZZZZZZZZZZZZ"` | -1 |
-| `"\b<JZZZZZZZZZZZY"` | -2 |
+| `"\t;;;;;;;;;;;;;Z"` | 31 |
+| `"\t;;;;;;;;;;;;C;"` | 256 |
+| `"\t;;;;;;;;;;;<Y;"` | 1984 |
+| `"\t;;;;;;;;;;;;;;"` | 0 |
+| `"\t;;;;;;;;;;;;;<"` | 1 |
+| `"\t<JZZZZZZZZZZZZ"` | -1 |
+| `"\t<JZZZZZZZZZZZY"` | -2 |
 
 ## encode/decode
 
@@ -193,9 +193,9 @@ expect(new DecoderSource($row.encoded).decodeInteger())
 
 | encoded | decoded |
 | --- | --- |
-| `"\b;;;;;;Z"` | 31 |
-| `"\b<ZZZZZZ"` | 2147483647 |
-| `"\b=;;;;;;"` | -2147483648 |
+| `"\t;;;;;;Z"` | 31 |
+| `"\t<ZZZZZZ"` | 2147483647 |
+| `"\t=;;;;;;"` | -2147483648 |
 
 ## decode invalid
 
@@ -236,15 +236,15 @@ expect(new DecoderSource($row.encoded).decodeLong())
 
 | encoded | decoded |
 | --- | --- |
-| `"\b;;;;;;;;;;;;;Z"` | 31 |
-| `"\b;;;;;;;;;;;;C;"` | 256 |
-| `"\b;;;;;;;;;;;<Y;"` | 1984 |
-| `"\b;;;;;;;;;;;;;;"` | 0 |
-| `"\b;;;;;;;;;;;;;<"` | 1 |
-| `"\b<JZZZZZZZZZZZZ"` | -1 |
-| `"\b<JZZZZZZZZZZZY"` | -2 |
-| `"\b;BZZZZZZZZZZZZ"` | 9223372036854775807 |
-| `"\b<C;;;;;;;;;;;;"` | -9223372036854775808 |
+| `"\t;;;;;;;;;;;;;Z"` | 31 |
+| `"\t;;;;;;;;;;;;C;"` | 256 |
+| `"\t;;;;;;;;;;;<Y;"` | 1984 |
+| `"\t;;;;;;;;;;;;;;"` | 0 |
+| `"\t;;;;;;;;;;;;;<"` | 1 |
+| `"\t<JZZZZZZZZZZZZ"` | -1 |
+| `"\t<JZZZZZZZZZZZY"` | -2 |
+| `"\t;BZZZZZZZZZZZZ"` | 9223372036854775807 |
+| `"\t<C;;;;;;;;;;;;"` | -9223372036854775808 |
 
 ## decode invalid
 
@@ -254,7 +254,7 @@ expect(() => new DecoderSource($item).decodeLong(), $item)
 ```
 
 * `"30"`
-* `"\b`
+* `"\t`
 
 # double
 
@@ -285,5 +285,5 @@ expect(() => new DecoderSource($item).decodeDouble())
 	.toThrow()
 ```
 
-* `"\b;;;;;;;;;;;;;;"`
+* `"\t;;;;;;;;;;;;;;"`
 * `"\f;;;;;;;;;;;;;;`

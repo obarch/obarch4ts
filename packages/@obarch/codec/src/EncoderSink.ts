@@ -39,7 +39,7 @@ export default class EncoderSink {
     }
 
     encodeBytes(val: Uint8Array): EncoderSink {
-        this.builder += '"\\"'
+        this.builder += '"\\b'
         for (let i = 0; i < val.length;) {
             const b1 = val[i]
             i++
@@ -108,7 +108,7 @@ export default class EncoderSink {
         if (val < -2147483648) {
             throw '< -2147483648 can not be encoded by this method'
         }
-        this.builder += '"\\b'
+        this.builder += '"\\t'
         this.builder += String.fromCharCode(
             SEMICOLON + ((val >>> 30) & MASK),
             SEMICOLON + ((val >>> 25) & MASK),
@@ -123,7 +123,7 @@ export default class EncoderSink {
     }
 
     encodeLong(val: Long): EncoderSink {
-        this.builder += '"\\b'
+        this.builder += '"\\t'
         this.encodeLongBody(val)
         this.builder += '"'
         return this

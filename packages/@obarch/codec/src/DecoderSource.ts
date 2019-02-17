@@ -55,9 +55,9 @@ export default class DecoderSource {
     }
 
     decodeInteger(): number {
-        let isValidPrelud = this.buf[this.offset] === '"' && this.buf[this.offset + 1] === '\\' && this.buf[this.offset + 2] === 'b'
+        let isValidPrelud = this.buf[this.offset] === '"' && this.buf[this.offset + 1] === '\\' && this.buf[this.offset + 2] === 't'
         if (!isValidPrelud) {
-            throw 'expect "\\b'
+            throw 'expect "\\t'
         }
         this.offset += 3
         let val = 0
@@ -71,7 +71,7 @@ export default class DecoderSource {
         throw 'expect "'
     }
 
-    decodeLong(type = 'b'): Long {
+    decodeLong(type = 't'): Long {
         let isValidPrelud = this.buf[this.offset] === '"' && this.buf[this.offset + 1] === '\\' && this.buf[this.offset + 2] === type
         if (!isValidPrelud) {
             throw 'expect "\\' + type
@@ -221,9 +221,9 @@ export default class DecoderSource {
     }
 
     decodeBytes(): Uint8Array {
-        let isValidPrelude = this.buf[this.offset] === '"' && this.buf[this.offset + 1] === '\\' && this.buf[this.offset + 2] === '"'
+        let isValidPrelude = this.buf[this.offset] === '"' && this.buf[this.offset + 1] === '\\' && this.buf[this.offset + 2] === 'b'
         if (!isValidPrelude) {
-            throw 'expect "\\"'
+            throw 'expect "\\b'
         }
         this.offset += 3
         let builder = new BytesBuilder()
