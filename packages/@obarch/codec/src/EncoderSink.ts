@@ -38,6 +38,15 @@ export default class EncoderSink {
     }
 
     encodeInteger(val: number): EncoderSink {
+        if (!Number.isInteger(val)) {
+            throw 'expect Integer'
+        }
+        if (val > 2147483647) {
+            throw '> 2147483647 can not be encoded by this method'
+        }
+        if (val < -2147483648) {
+            throw '< -2147483648 can not be encoded by this method'
+        }
         this.builder += '"\\b'
         this.builder += String.fromCharCode(
             SEMICOLON + ((val >>> 30) & MASK),

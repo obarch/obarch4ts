@@ -135,7 +135,7 @@ expect(new DecoderSource($row.encoded).decodeInteger())
 | `"\b<ZZZZZZ"` | 2147483647 |
 | `"\b=;;;;;;"` | -2147483648 |
 
-## invalid
+## decode invalid
 
 ```typescript
 expect(() => new DecoderSource($row.encoded).decodeInteger())
@@ -145,3 +145,14 @@ expect(() => new DecoderSource($row.encoded).decodeInteger())
 * `"30"`
 * `"\b"`
 * `"\b;`
+
+## encode invalid
+
+```typescript
+const val = eval($item)
+expect(() => new EncoderSink().encodeInteger(val))
+    .toThrow()
+```
+
+* `1.1`
+* `2147483648`
