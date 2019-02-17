@@ -71,10 +71,17 @@ expect(new EncoderSink().encodeString($row.decoded).toString())
 
 | encoded | decoded |
 | --- | --- |
-| `"hello"` | hello |
+| `"hello"` | `hello` |
+| `"中文"` | `中文` |
+| `"𐐷"` | `𐐷` |
+| `"𤭢"` | `𤭢` |
+| `"🙏"` | `🙏` |
+| `"\\CC"` | `"` |
+| `"\\FM"` | `\` |
+| `"\\CP"` | `/` |
+| `"h\\CCe\\CCl\\CCl\\CCo"` | `h"e"l"l"o` |
 
 ## invalid
-
 
 ```typescript
 expect(() => new DecoderSource($item).decodeString())
@@ -82,3 +89,4 @@ expect(() => new DecoderSource($item).decodeString())
 ```
 
 * `"hello`
+* `"\"`

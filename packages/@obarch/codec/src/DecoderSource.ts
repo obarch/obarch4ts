@@ -1,3 +1,6 @@
+const A = 'A'.charCodeAt(0)
+
+
 export default class DecoderSource {
 
     private readonly buf: string
@@ -43,10 +46,71 @@ export default class DecoderSource {
             throw 'expect "'
         }
         this.offset++
-        for (let i = this.offset; i < this.buf.length; i++) {
-            if (this.buf[i] === '"') {
-                return this.buf.substr(this.offset, i - this.offset)
+        let i = this.offset
+        for (; i < this.buf.length;) {
+            const c = this.buf[i]
+            if (c === '"') {
+                let str = this.buf.substr(this.offset, i - this.offset)
+                this.offset = i + 1
+                return str
             }
+            if (c === '\\') {
+                break
+            }
+            i++
+        }
+        let builder: [string] = [this.buf.substr(this.offset, i - this.offset)]
+        this.offset = i
+        while (true) {
+            if (this.decodeStringEscaped(builder)) {
+                break;
+            }
+            if (this.decodeStringRaw(builder)) {
+                break;
+            }
+        }
+        return builder[0]
+    }
+
+    private decodeStringEscaped(builder: [string]): boolean {
+        let str = builder[0]
+        for (let i = this.offset; i < this.buf.length;) {
+            const c = this.buf[i]
+            if (c === '"') {
+                builder[0] = str
+                this.offset = i + 1;
+                return true
+            }
+            if (c === '\\') {
+                if (this.buf[i + 1] !== '\\') {
+                    throw 'expect \\'
+                }
+                const code = ((this.buf.charCodeAt(i + 2) - A) << 4) + this.buf.charCodeAt(i + 3) - A
+                str += String.fromCharCode(code)
+                i += 4
+                continue
+            }
+            builder[0] = str
+            this.offset = i;
+            return false
+        }
+        throw 'expect closing "'
+    }
+
+    private decodeStringRaw(builder: [string]): boolean {
+        for (let i = this.offset; i < this.buf.length;) {
+            const c = this.buf[i]
+            if (c === '"') {
+                builder[0] += this.buf.substr(this.offset, i - this.offset)
+                this.offset = i + 1;
+                return true
+            }
+            if (c === '\\') {
+                builder[0] += this.buf.substr(this.offset, i - this.offset)
+                this.offset = i;
+                return false
+            }
+            i++
         }
         throw 'expect closing "'
     }
