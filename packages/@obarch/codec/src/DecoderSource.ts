@@ -1,4 +1,4 @@
-export class DecoderSource {
+export default class DecoderSource {
 
     private readonly buf: string
     private offset: number
@@ -36,5 +36,18 @@ export class DecoderSource {
             return false
         }
         throw 'expect true or false'
+    }
+
+    decodeString(): string {
+        if (this.buf[this.offset] !== '"') {
+            throw 'expect "'
+        }
+        this.offset++
+        for (let i = this.offset; i < this.buf.length; i++) {
+            if (this.buf[i] === '"') {
+                return this.buf.substr(this.offset, i - this.offset)
+            }
+        }
+        throw 'expect closing "'
     }
 }
