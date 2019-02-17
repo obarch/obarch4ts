@@ -39,7 +39,7 @@ export default class EncoderSink {
     }
 
     encodeBytes(val: Uint8Array): EncoderSink {
-        this.builder += '"'
+        this.builder += '"\\"'
         for (let i = 0; i < val.length;) {
             const b1 = val[i]
             i++
