@@ -18,6 +18,8 @@ expect.extend({
     },
 });
 
+type Row = Record<string, any>
+
 export class Table {
     head: string[] = []
     body: string[][] = [];
@@ -28,7 +30,7 @@ export class Table {
 
     * rows() {
         for (let row of this.body) {
-            let namedRow: Record<string, string> = {}
+            let namedRow: Row = {}
             for (let i = 0; i < this.head.length; i++) {
                 namedRow[this.head[i]] = row[i]
             }

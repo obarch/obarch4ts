@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "name": "@livedoc/quick-start",
+  "version": "1.0.0",
+  "dependencies": {
+    "@obarch/livedoc": "^1.0.1"
+  },
+  "scripts": {
+    "test": "jest"
+  }
+}

@@ -4,6 +4,9 @@ describe('表格', () => {
     test('获取行和列', () => {
         eval(livedoc.myTestData().code.content)
     })
+    test('遍历', () => {
+        eval(livedoc.myTestData().code.content)
+    })
 })
 
 test('one level table', () => {
