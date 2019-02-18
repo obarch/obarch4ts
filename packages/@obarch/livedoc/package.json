@@ -5,7 +5,10 @@
   "main": "dist/livedoc.js",
   "types": "dist/livedoc.d.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc",
+    "docs:dev": "vuepress dev src/__tests__",
+    "docs:build": "vuepress build src/__tests__ -d dist/docs"
   },
   "repository": {
     "type": "git",
@@ -26,6 +29,7 @@
   },
   "devDependencies": {
     "ts-jest": "^23.10.5",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3",
+    "vuepress": "^0.14.9"
   }
 }

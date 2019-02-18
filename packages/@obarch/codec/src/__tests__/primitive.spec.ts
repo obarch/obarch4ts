@@ -60,4 +60,3 @@ describe('double', () => {
     test('valid', testByTable)
     test('invalid', testByList)
 })
-
