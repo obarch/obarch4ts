@@ -188,17 +188,42 @@ export default class EncoderSink {
             this.encodeString(obj)
             return this
         }
-        if (Array.isArray(obj)) {
-            this.builder += '['
-            for (let i = 0; i < obj.length; i++) {
-                if (i > 0) {
+        if (typeof obj === 'number') {
+            if (Number.isInteger(obj)) {
+                this.encodeInteger(obj)
+            } else {
+                this.encodeDouble(obj)
+            }
+            return this
+        }
+        if (typeof obj === 'object') {
+            if (Array.isArray(obj)) {
+                this.builder += '['
+                for (let i = 0; i < obj.length; i++) {
+                    if (i > 0) {
+                        this.builder += ','
+                    }
+                    this.encodeObject(obj[i])
+                }
+                this.builder += ']'
+                return this
+            }
+            this.builder += '{'
+            let isFirst = true
+            for (let key in obj) {
+                if (isFirst) {
+                    isFirst = false
+                } else {
                     this.builder += ','
                 }
-                this.encodeObject(obj[i])
+                this.encodeString(key)
+                this.builder += ':'
+                this.encodeObject(obj[key])
             }
-            this.builder += ']'
+            this.builder += '}'
+            return this
         }
-        return this
+        throw 'unexpected type'
     }
 
     toString(): string {
