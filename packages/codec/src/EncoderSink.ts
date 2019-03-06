@@ -182,6 +182,21 @@ export default class EncoderSink {
     encodeObject(obj: any): EncoderSink {
         if (obj === undefined || obj === null) {
             this.encodeNull()
+            return this
+        }
+        if (typeof obj === 'string') {
+            this.encodeString(obj)
+            return this
+        }
+        if (Array.isArray(obj)) {
+            this.builder += '['
+            for (let i = 0; i < obj.length; i++) {
+                if (i > 0) {
+                    this.builder += ','
+                }
+                this.encodeObject(obj[i])
+            }
+            this.builder += ']'
         }
         return this
     }
