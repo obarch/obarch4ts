@@ -12,7 +12,7 @@ function testByTable() {
     }
 }
 
-test('array', () => {
+test('struct', () => {
     testByTable()
 })
 

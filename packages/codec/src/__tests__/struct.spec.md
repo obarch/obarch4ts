@@ -1,4 +1,4 @@
-# array
+# struct
 
 ```js
 const val = JSON.parse($row.decoded)
@@ -14,11 +14,5 @@ expect(new DecoderSource($row.encoded).decodeValue())
 
 | encoded | decoded |
 | ------ | ----- |
-| `[]` | `[]` |
-| `["hello"]` | `["hello"]` |
-| `["a","b"]` | `["a","b"]` |
-| `["\t;;;;;;<"]` | `[1]` |
-| `["\f;>ZY;;;;;;;;;;"]` | `[1.5]` |
-| `[["a"],["b"]]` | `[["a"],["b"]]` |
-| `[{"a":"b"}]` | `[{"a":"b"}]` |
-| `[{"a":"b"},{"c":"d"}]` | `[{"a":"b"},{"c":"d"}]` |
+| `{}` | `{}` |
+| `{"a":"b"}` | `{"a":"b"}` |

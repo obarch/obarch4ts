@@ -257,4 +257,67 @@ export default class DecoderSource {
         }
         throw 'expect closing "'
     }
+
+    decodeValue(): any {
+        switch (this.buf[this.offset]) {
+            case '[':
+                return this.decodeArray()
+            case '{':
+                return this.decodeStruct()
+            case '"':
+                if (this.buf[this.offset + 1] === '\\') {
+                    if (this.buf[this.offset + 2] === 't') {
+                        return this.decodeInteger()
+                    }
+                    if (this.buf[this.offset + 2] === 'f') {
+                        return this.decodeDouble()
+                    }
+                }
+                return this.decodeString()
+        }
+        throw 'unexpected character: ' + this.buf[this.offset]
+    }
+
+    decodeArray(): any[] {
+        if (this.buf[this.offset] !== '[') {
+            throw 'expect ['
+        }
+        if (this.buf[this.offset + 1] === ']') {
+            return []
+        }
+        let array: any[] = []
+        do {
+            this.offset++
+            array.push(this.decodeValue())
+        } while (this.buf[this.offset] === ',')
+        if (this.buf[this.offset] !== ']') {
+            throw 'expect ]'
+        }
+        this.offset++
+        return array
+    }
+
+    decodeStruct(): Record<string, any> {
+        if (this.buf[this.offset] !== '{') {
+            throw 'expect {'
+        }
+        if (this.buf[this.offset + 1] === '}') {
+            return {}
+        }
+        let struct: Record<string, any> = {}
+        do {
+            this.offset++
+            let field = this.decodeString()
+            if (this.buf[this.offset] !== ':') {
+                throw 'expect :'
+            }
+            this.offset++
+            struct[field] = this.decodeValue()
+        } while (this.buf[this.offset] === ',')
+        if (this.buf[this.offset] !== '}') {
+            throw 'expect }'
+        }
+        this.offset++
+        return struct
+    }
 }

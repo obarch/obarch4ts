@@ -179,7 +179,7 @@ export default class EncoderSink {
         return this
     }
 
-    encodeObject(obj: any): EncoderSink {
+    encodeValue(obj: any): EncoderSink {
         if (obj === undefined || obj === null) {
             this.encodeNull()
             return this
@@ -203,7 +203,7 @@ export default class EncoderSink {
                     if (i > 0) {
                         this.builder += ','
                     }
-                    this.encodeObject(obj[i])
+                    this.encodeValue(obj[i])
                 }
                 this.builder += ']'
                 return this
@@ -218,7 +218,7 @@ export default class EncoderSink {
                 }
                 this.encodeString(key)
                 this.builder += ':'
-                this.encodeObject(obj[key])
+                this.encodeValue(obj[key])
             }
             this.builder += '}'
             return this
